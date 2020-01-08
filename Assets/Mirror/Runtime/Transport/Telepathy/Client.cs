@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
-using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -99,7 +98,7 @@ namespace Telepathy
             // if we got here then we are done. ReceiveLoop cleans up already,
             // but we may never get there if connect fails. so let's clean up
             // here too.
-            client.Close();
+            client?.Close();
         }
 
         public void Connect(string ip, int port)

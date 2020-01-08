@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
@@ -224,12 +224,16 @@ namespace Telepathy
                 TcpClient client = kvp.Value.client;
                 // close the stream if not closed yet. it may have been closed
                 // by a disconnect already, so use try/catch
-                try { client.GetStream().Close(); } catch {}
+                try { client.GetStream().Close(); } catch { }
                 client.Close();
             }
 
             // clear clients list
             clients.Clear();
+
+            // reset the counter in case we start up again so
+            // clients get connection ID's starting from 1
+            counter = 0;
         }
 
         // send message to client using socket connection.
@@ -249,7 +253,12 @@ namespace Telepathy
                     token.sendPending.Set(); // interrupt SendThread WaitOne()
                     return true;
                 }
-                Logger.Log("Server.Send: invalid connectionId: " + connectionId);
+                // sending to an invalid connectionId is expected sometimes.
+                // for example, if a client disconnects, the server might still
+                // try to send for one frame before it calls GetNextMessages
+                // again and realizes that a disconnect happened.
+                // so let's not spam the console with log messages.
+                //Logger.Log("Server.Send: invalid connectionId: " + connectionId);
                 return false;
             }
             Logger.LogError("Client.Send: message too big: " + data.Length + ". Limit: " + MaxMessageSize);
