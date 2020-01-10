@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace URollback.Examples.VectorWar
 {
-    public class NetworkManager : Mirror.NetworkManager
+    public class NetworkManager : URollback.Core.NetworkManager
     {
-
+        
     }
 }
