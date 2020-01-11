@@ -1,5 +1,4 @@
-﻿using Mirror;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +12,7 @@ namespace URollback.Core
         private bool sessionStarted;
         private int frameDelay;
 
-        public URollbackErrorCode StartSession(NetworkConnection[] players)
+        public URollbackErrorCode StartSession(int[] players)
         {
             if (sessionStarted)
             {
@@ -21,7 +20,7 @@ namespace URollback.Core
             }
             for(int i = 0; i < players.Length; i++)
             {
-                this.players.Add(players[i].connectionId, new URollbackPlayer(players[i]));
+                this.players.Add(players[i], new URollbackPlayer(players[i]));
             }
             sessionStarted = true;
             return URollbackErrorCode.OK;
@@ -33,10 +32,14 @@ namespace URollback.Core
             sessionStarted = false;
         }
 
-        public int AddPlayer(NetworkConnection networkConnection)
+        public URollbackPlayer AddPlayer(int identifier)
         {
-            players.Add(networkConnection.connectionId, new URollbackPlayer(networkConnection));
-            return players.Count-1;
+            if (players.ContainsKey(identifier))
+            {
+                return null;
+            }
+            players.Add(identifier, new URollbackPlayer(identifier));
+            return players[identifier];
         }
 
         public URollbackPlayer GetPlayer(int connectionId)
