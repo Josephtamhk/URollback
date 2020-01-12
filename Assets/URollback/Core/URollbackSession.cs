@@ -50,10 +50,5 @@ namespace URollback.Core
             }
             return players[connectionId];
         }
-
-        public void AdvanceFrame()
-        {
-
-        }
     }
 }
