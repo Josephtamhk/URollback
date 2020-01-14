@@ -12,8 +12,8 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: ChrisTides11
-  productName: URollback
+  companyName: DefaultCompany
+  productName: VectorWar
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -52,7 +52,7 @@ PlayerSettings:
   m_StackTraceTypes: 010000000100000001000000010000000100000001000000
   iosShowActivityIndicatorOnLoading: -1
   androidShowActivityIndicatorOnLoading: -1
-  displayResolutionDialog: 1
+  displayResolutionDialog: 2
   iosUseCustomAppBackgroundBehavior: 0
   iosAllowHTTPDownload: 1
   allowedAutorotateToPortrait: 1
@@ -92,7 +92,7 @@ PlayerSettings:
   visibleInBackground: 1
   allowFullscreenSwitch: 1
   graphicsJobMode: 0
-  fullscreenMode: 1
+  fullscreenMode: 3
   xboxSpeechDB: 0
   xboxEnableHeadOrientation: 0
   xboxEnableGuest: 0
@@ -118,7 +118,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 0.1
+  bundleVersion: 1.0.1837.3516
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -156,7 +156,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Standalone: com.Company.ProductName
+    Standalone: 
   buildNumber: {}
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 16
@@ -501,7 +501,7 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   scriptingDefineSymbols:
-    1: MIRROR;MIRROR_1726_OR_NEWER;MIRROR_3_0_OR_NEWER;MIRROR_3_12_OR_NEWER;MIRROR_4_0_OR_NEWER;LITENETLIB4MIRROR
+    1: BUILD_TYPE_VECTORWAR_SERVER_;BUILD_PLATFORM_PC;BUILD_ARCH_WINDOWSX64;LITENETLIB4MIRROR;MIRROR;MIRROR_1726_OR_NEWER;MIRROR_3_0_OR_NEWER;MIRROR_3_12_OR_NEWER;MIRROR_4_0_OR_NEWER
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration: {}

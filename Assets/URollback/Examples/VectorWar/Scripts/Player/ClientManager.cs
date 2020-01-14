@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace URollback.Examples.VectorWar
 {
-    public class PlayerManager : MonoBehaviour
+    public class ClientManager : MonoBehaviour
     {
 
     }
