@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace URollback.Core
 {
-    public class URollbackPlayer
+    public class URollbackClient
     {
         public delegate void RTTChangedAction();
         public static event RTTChangedAction OnRTTChanged;
@@ -15,7 +15,7 @@ namespace URollback.Core
         private int identifier;
         private float rtt;
 
-        public URollbackPlayer(int identifier)
+        public URollbackClient(int identifier)
         {
             this.identifier = identifier;
         }

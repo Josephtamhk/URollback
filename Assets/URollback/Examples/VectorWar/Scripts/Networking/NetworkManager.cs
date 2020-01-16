@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.UI;
 
 namespace URollback.Examples.VectorWar
 {
@@ -9,6 +10,7 @@ namespace URollback.Examples.VectorWar
     {
         public bool autoStartGame;
         public ClientManager clientManagerPrefab;
+        public GameManager gameManager;
 
         public void StartHosting(int playerCount)
         {
@@ -38,7 +40,7 @@ namespace URollback.Examples.VectorWar
             Debug.Log($"Client {conn.connectionId} connected to server.");
 
             GameObject clientManager = GameObject.Instantiate(clientManagerPrefab.gameObject, Vector3.zero, Quaternion.identity);
-            NetworkServer.Spawn(clientManager, conn);
+            NetworkServer.AddPlayerForConnection(conn, clientManager);
         }
     }
 }

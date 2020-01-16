@@ -1,0 +1,16 @@
+{
+    "name": "URollback.Examples.VectorWar",
+    "references": [
+        "URollback",
+        "Mirror",
+        "URollback.Examples.ConsoleWindow"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

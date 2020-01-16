@@ -8,19 +8,24 @@ namespace URollback.Core
     {
         public bool SessionStarted { get { return sessionStarted; } }
 
-        private Dictionary<int, URollbackPlayer> players = new Dictionary<int, URollbackPlayer>();
+        private Dictionary<int, URollbackClient> clients = new Dictionary<int, URollbackClient>();
         private bool sessionStarted;
         private int frameDelay;
 
-        public URollbackErrorCode StartSession(int[] players)
+        /// <summary>
+        /// Initializes a rollback session.  
+        /// </summary>
+        /// <param name="clients"></param>
+        /// <returns></returns>
+        public URollbackErrorCode InitSession(int[] clients)
         {
             if (sessionStarted)
             {
                 return URollbackErrorCode.INVALID_SESSION;
             }
-            for(int i = 0; i < players.Length; i++)
+            for(int i = 0; i < clients.Length; i++)
             {
-                this.players.Add(players[i], new URollbackPlayer(players[i]));
+                this.clients.Add(clients[i], new URollbackClient(clients[i]));
             }
             sessionStarted = true;
             return URollbackErrorCode.OK;
@@ -28,27 +33,39 @@ namespace URollback.Core
 
         public void EndSession()
         {
-            players.Clear();
+            clients.Clear();
             sessionStarted = false;
         }
 
-        public URollbackPlayer AddPlayer(int identifier)
+        /// <summary>
+        /// Adds a client to the session. 
+        /// Returns null if the identifier is being used.
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        public URollbackClient AddClient(int identifier)
         {
-            if (players.ContainsKey(identifier))
+            if (clients.ContainsKey(identifier))
             {
                 return null;
             }
-            players.Add(identifier, new URollbackPlayer(identifier));
-            return players[identifier];
+            clients.Add(identifier, new URollbackClient(identifier));
+            return clients[identifier];
         }
 
-        public URollbackPlayer GetPlayer(int connectionId)
+        /// <summary>
+        /// Gets a client that is in the session. 
+        /// Returns null if no client exist for the identifier.
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        public URollbackClient GetClient(int identifier)
         {
-            if (!players.ContainsKey(connectionId))
+            if (!clients.ContainsKey(identifier))
             {
                 return null;
             }
-            return players[connectionId];
+            return clients[identifier];
         }
     }
 }
