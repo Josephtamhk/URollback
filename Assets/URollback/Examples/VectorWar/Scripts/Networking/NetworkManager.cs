@@ -3,15 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
+using URollback.Core;
 
 namespace URollback.Examples.VectorWar
 {
     public class NetworkManager : Mirror.NetworkManager
     {
+        public static NetworkManager instance;
+
+        public URollbackSession rollbackSession;
+
         public bool autoStartGame;
         public ClientManager clientManagerPrefab;
         public GameManager gameManager;
 
+        private void Awake()
+        {
+            instance = this;
+        }
+
+        #region Connecting
         public void StartHosting(int playerCount)
         {
             Debug.Log($"Starting host for {playerCount} players.");
@@ -42,5 +53,6 @@ namespace URollback.Examples.VectorWar
             GameObject clientManager = GameObject.Instantiate(clientManagerPrefab.gameObject, Vector3.zero, Quaternion.identity);
             NetworkServer.AddPlayerForConnection(conn, clientManager);
         }
+        #endregion
     }
 }

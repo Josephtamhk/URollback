@@ -9,8 +9,6 @@ namespace URollback.Examples.VectorWar
     {
         public static GameManager instance;
 
-        public URollbackSession rollbackSession;
-
         private void Awake()
         {
             instance = this;
