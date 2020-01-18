@@ -6,6 +6,7 @@
 [Bb]in/
 Assets/AssetStoreTools*
 Assets/[Uu]nityBuild
+Assets/[Pp]lugins
 
 # Visual Studio cache directory
 .vs/
