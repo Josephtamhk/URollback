@@ -4,37 +4,59 @@ using UnityEngine;
 
 namespace URollback.Core
 {
+    [System.Serializable]
     public class URollbackSession
     {
-        public bool SessionStarted { get { return sessionStarted; } }
+        public bool SessionActive { get { return sessionActive; } }
 
         private Dictionary<int, URollbackClient> clients = new Dictionary<int, URollbackClient>();
-        private bool sessionStarted;
+        private bool sessionActive;
         private int frameDelay;
 
         /// <summary>
-        /// Initializes a rollback session.  
+        /// Activates a session.
+        /// This should be called before gameplay starts, such as while in a lobby.
         /// </summary>
         /// <param name="clients"></param>
         /// <returns></returns>
-        public URollbackErrorCode InitSession(int[] clients)
+        public URollbackErrorCode ActivateSession()
         {
-            if (sessionStarted)
+            if (sessionActive)
             {
                 return URollbackErrorCode.INVALID_SESSION;
             }
-            for(int i = 0; i < clients.Length; i++)
-            {
-                this.clients.Add(clients[i], new URollbackClient(clients[i]));
-            }
-            sessionStarted = true;
+            sessionActive = true;
             return URollbackErrorCode.OK;
         }
 
-        public void EndSession()
+        /// <summary>
+        /// Starts a rollback session.
+        /// This should be called when gameplay actually starts, ie. the match begins.
+        /// </summary>
+        /// <returns></returns>
+        public URollbackErrorCode StartSession()
+        {
+            return URollbackErrorCode.OK;
+        }
+
+        /// <summary>
+        /// Ends a rollback session.
+        /// This should be called when gameplay ends.
+        /// </summary>
+        /// <returns></returns>
+        public URollbackErrorCode EndSession()
+        {
+            return URollbackErrorCode.OK;
+        }
+
+        /// <summary>
+        /// Deactivates the session.
+        /// This should be called when the client disconnects from the server, or when the host stops the server.
+        /// </summary>
+        public void DeactivateSession()
         {
             clients.Clear();
-            sessionStarted = false;
+            sessionActive = false;
         }
 
         /// <summary>
@@ -45,19 +67,34 @@ namespace URollback.Core
         /// <returns></returns>
         public URollbackClient AddClient(int identifier)
         {
+            return AddClient(identifier, new URollbackClient(identifier));
+        }
+
+        public URollbackClient AddClient(int identifier, URollbackClient client)
+        {
             if (clients.ContainsKey(identifier))
             {
                 return null;
             }
-            clients.Add(identifier, new URollbackClient(identifier));
+            clients.Add(identifier, client);
             return clients[identifier];
+        }
+
+        /// <summary>
+        /// Removes a client from the session.
+        /// If the 
+        /// </summary>
+        /// <param name="identifier"></param>
+        public void RemoveClient(int identifier)
+        {
+            clients.Remove(identifier);
         }
 
         /// <summary>
         /// Gets a client that is in the session. 
         /// Returns null if no client exist for the identifier.
         /// </summary>
-        /// <param name="connectionId"></param>
+        /// <param name="identifier"></param>
         /// <returns></returns>
         public URollbackClient GetClient(int identifier)
         {
@@ -66,6 +103,11 @@ namespace URollback.Core
                 return null;
             }
             return clients[identifier];
+        }
+
+        public bool HasClient(int identifier)
+        {
+            return clients.ContainsKey(identifier);
         }
     }
 }
