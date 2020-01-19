@@ -31,7 +31,7 @@ namespace URollback.Examples.VectorWar
         public void StartHosting(int playerCount)
         {
             Debug.Log($"Starting host for {playerCount} players.");
-            maxConnections = playerCount - 1;
+            maxConnections = playerCount;
             StartHost();
         }
 
