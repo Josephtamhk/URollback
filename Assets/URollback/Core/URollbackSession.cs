@@ -26,7 +26,7 @@ namespace URollback.Core
         /// </summary>
         /// <param name="clients"></param>
         /// <returns></returns>
-        public URollbackErrorCode StartSession()
+        public virtual URollbackErrorCode StartSession()
         {
             if (sessionActive)
             {
@@ -42,7 +42,7 @@ namespace URollback.Core
         /// This should be called by clients when they disconnect,
         /// and by the server when it shuts down.
         /// </summary>
-        public void EndSession()
+        public virtual void EndSession()
         {
             clients.Clear();
             sessionActive = false;
@@ -54,7 +54,7 @@ namespace URollback.Core
         /// This should be called by clients when a match ends
         /// and you plan on starting a new one, such as returning to lobby.
         /// </summary>
-        public void ResetSession()
+        public virtual void ResetSession()
         {
             currentFrame = 0;
         }
@@ -65,7 +65,7 @@ namespace URollback.Core
         /// </summary>
         /// <param name="identifier"></param>
         /// <returns></returns>
-        public URollbackClient AddClient(int identifier)
+        public virtual URollbackClient AddClient(int identifier)
         {
             return AddClient(identifier, new URollbackClient(identifier));
         }
@@ -77,7 +77,7 @@ namespace URollback.Core
         /// <param name="identifier"></param>
         /// <param name="client"></param>
         /// <returns></returns>
-        public URollbackClient AddClient(int identifier, URollbackClient client)
+        public virtual URollbackClient AddClient(int identifier, URollbackClient client)
         {
             if (clients.ContainsKey(identifier))
             {
@@ -93,7 +93,7 @@ namespace URollback.Core
         /// This should be called whenever a client disconnects.
         /// </summary>
         /// <param name="identifier"></param>
-        public void RemoveClient(int identifier)
+        public virtual void RemoveClient(int identifier)
         {
             clients.Remove(identifier);
             OnClientRemoved?.Invoke(identifier);
@@ -105,7 +105,7 @@ namespace URollback.Core
         /// </summary>
         /// <param name="identifier"></param>
         /// <returns></returns>
-        public URollbackClient GetClient(int identifier)
+        public virtual URollbackClient GetClient(int identifier)
         {
             if (!clients.ContainsKey(identifier))
             {
@@ -114,7 +114,7 @@ namespace URollback.Core
             return clients[identifier];
         }
 
-        public bool HasClient(int identifier)
+        public virtual bool HasClient(int identifier)
         {
             return clients.ContainsKey(identifier);
         }
@@ -125,7 +125,7 @@ namespace URollback.Core
         /// but before you start the next.
         /// </summary>
         /// <returns></returns>
-        public URollbackErrorCode AdvanceFrame()
+        public virtual URollbackErrorCode AdvanceFrame()
         {
             if (!sessionActive)
             {
@@ -142,7 +142,7 @@ namespace URollback.Core
         /// your character's list of inputs.
         /// </summary>
         /// <param name="identifier"></param>
-        public void AdvanceLocalInput(int identifier)
+        public virtual void AdvanceLocalInput(int identifier)
         {
             URollbackClient localClient = GetClient(identifier);
             localClient.AdvanceLocalInputFrame();
@@ -156,7 +156,7 @@ namespace URollback.Core
             }
         }
 
-        public void AdvanceRemoteInput(int localIdentifier, int identifier)
+        public virtual void AdvanceRemoteInput(int localIdentifier, int identifier)
         {
             URollbackClient localClient = GetClient(localIdentifier);
             URollbackClient remoteClient = GetClient(identifier);
