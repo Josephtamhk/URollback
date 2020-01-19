@@ -10,6 +10,7 @@ namespace URollback.Examples.VectorWar
     {
         private GameManager gameManager;
         private NetworkManager networkManager;
+        [SerializeField] private GameObject playerPrefab;
 
         double rtt;
         float rttUpdateTimer;
@@ -59,6 +60,18 @@ namespace URollback.Examples.VectorWar
         {
             networkManager.rollbackSession.GetClient(NetworkClient.connection.connectionId).RTT = rtt;
             this.rtt = rtt;
+        }
+
+        [Server]
+        public void ServerSpawnPlayers(int spawnIndex)
+        {
+            RpcSpawnPlayers(spawnIndex);
+        }
+
+        [ClientRpc]
+        public void RpcSpawnPlayers(int spawnIndex)
+        {
+
         }
     }
 }

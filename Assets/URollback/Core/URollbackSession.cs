@@ -134,5 +134,33 @@ namespace URollback.Core
             currentFrame++;
             return URollbackErrorCode.OK;
         }
+
+        /// <summary>
+        /// Advances the input frame counter for the local client,
+        /// and adds a localFrameLag value for remote clients.
+        /// Call this right after you add a frame's input to 
+        /// your character's list of inputs.
+        /// </summary>
+        /// <param name="identifier"></param>
+        public void AdvanceLocalInput(int identifier)
+        {
+            URollbackClient localClient = GetClient(identifier);
+            localClient.AdvanceLocalInputFrame();
+
+            foreach(URollbackClient remoteClient in clients.Values)
+            {
+                if(remoteClient != localClient)
+                {
+                    remoteClient.AddLocalFrameLag(localClient.InputFrame - remoteClient.InputFrame);
+                }
+            }
+        }
+
+        public void AdvanceRemoteInput(int localIdentifier, int identifier)
+        {
+            URollbackClient localClient = GetClient(localIdentifier);
+            URollbackClient remoteClient = GetClient(identifier);
+            remoteClient.AdvanceRemoteInputFrame(localClient.InputFrame);
+        }
     }
 }

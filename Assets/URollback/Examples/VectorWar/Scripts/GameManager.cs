@@ -9,9 +9,13 @@ namespace URollback.Examples.VectorWar
     {
         public static GameManager instance;
 
+        [SerializeField] private NetworkManager networkManager;
+
+
         private void Awake()
         {
             instance = this;
         }
+
     }
 }
