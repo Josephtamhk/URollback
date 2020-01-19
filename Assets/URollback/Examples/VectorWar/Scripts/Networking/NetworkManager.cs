@@ -59,7 +59,7 @@ namespace URollback.Examples.VectorWar
         {
             base.OnStartServer();
             SetupServerNetworkMessages();
-            rollbackSession.ActivateSession();
+            rollbackSession.StartSession();
         }
 
         public override void OnStartClient()
@@ -94,13 +94,13 @@ namespace URollback.Examples.VectorWar
         public override void OnClientConnect(NetworkConnection conn)
         {
             base.OnClientConnect(conn);
-            rollbackSession.ActivateSession();
+            rollbackSession.StartSession();
         }
 
         public override void OnClientDisconnect(NetworkConnection conn)
         {
             base.OnClientDisconnect(conn);
-            rollbackSession.DeactivateSession();
+            rollbackSession.EndSession();
         }
         #endregion
 
