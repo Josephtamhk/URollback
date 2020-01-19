@@ -6,8 +6,6 @@ using URollback.Core;
 
 namespace URollback.Examples.VectorWar
 {
-    [System.Serializable] 
-    public class SyncListURollbackClient : SyncList<URollbackClient> { }
     public enum URollbackSessionClientsMsgType
     {
         Add = 0,
@@ -17,7 +15,7 @@ namespace URollback.Examples.VectorWar
     public class URollbackSessionClientsMsg : MessageBase
     {
         public URollbackSessionClientsMsgType msgType;
-        public SyncListURollbackClient clients = new SyncListURollbackClient();
+        public URollbackClient[] clients;
 
         public URollbackSessionClientsMsg()
         {
@@ -27,10 +25,7 @@ namespace URollback.Examples.VectorWar
         public URollbackSessionClientsMsg(URollbackSessionClientsMsgType msgType, URollbackClient[] clients)
         {
             this.msgType = msgType;
-            foreach(URollbackClient client in clients)
-            {
-                this.clients.Add(client);
-            }
+            this.clients = clients;
         }
     }
 }

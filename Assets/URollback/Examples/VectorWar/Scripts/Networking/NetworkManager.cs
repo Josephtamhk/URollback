@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
 using URollback.Core;
+using System.Linq;
 
 namespace URollback.Examples.VectorWar
 {
@@ -11,11 +12,14 @@ namespace URollback.Examples.VectorWar
     {
         public static NetworkManager instance;
 
-        public URollbackSession rollbackSession;
+        public URollbackSession rollbackSession  = new URollbackSession();
 
         public bool autoStartGame;
         public ClientManager clientManagerPrefab;
         public GameManager gameManager;
+
+        [Header("UI")]
+        [SerializeField] private InputField ipField;
 
         public override void Awake()
         {
@@ -39,9 +43,14 @@ namespace URollback.Examples.VectorWar
             StartServer();
         }
 
+        public void ConnectToServer()
+        {
+            ConnectToServer(ipField.text);
+        }
+
         public void ConnectToServer(string ip)
         {
-            Debug.Log("Trying server connection.");
+            Debug.Log($"Trying server connection to {ip}.");
             networkAddress = ip;
             StartClient();
         }
@@ -50,7 +59,6 @@ namespace URollback.Examples.VectorWar
         {
             base.OnStartServer();
             SetupServerNetworkMessages();
-            rollbackSession = new URollbackSession();
             rollbackSession.ActivateSession();
         }
 
@@ -68,15 +76,31 @@ namespace URollback.Examples.VectorWar
             GameObject clientManager = GameObject.Instantiate(clientManagerPrefab.gameObject, Vector3.zero, Quaternion.identity);
             clientManager.GetComponent<ClientManager>().connectionID = conn.connectionId;
             NetworkServer.AddPlayerForConnection(conn, clientManager);
-            URollbackClient rClient = rollbackSession.AddClient(conn.connectionId);
-            NetworkServer.SendToAll(new URollbackSessionClientsMsg(URollbackSessionClientsMsgType.Add, new URollbackClient[] { rClient }));
+            rollbackSession.AddClient(conn.connectionId);
+            // Send the client information on all connected clients.
+            URollbackSessionClientsMsg clientsMsg = new URollbackSessionClientsMsg(URollbackSessionClientsMsgType.Add, rollbackSession.Clients.Values.ToArray());
+            NetworkServer.SendToAll(clientsMsg);
+        }
+
+        public override void OnServerDisconnect(NetworkConnection conn)
+        {
+            base.OnServerDisconnect(conn);
+            Debug.Log($"Client {conn.connectionId} disconnected from server.");
+
+            rollbackSession.RemoveClient(conn.connectionId);
+            NetworkServer.SendToAll(new URollbackSessionClientsMsg(URollbackSessionClientsMsgType.Remove, new URollbackClient[] { new URollbackClient(conn.connectionId) }));
         }
 
         public override void OnClientConnect(NetworkConnection conn)
         {
             base.OnClientConnect(conn);
-            Debug.Log($"Connected to server.");
             rollbackSession.ActivateSession();
+        }
+
+        public override void OnClientDisconnect(NetworkConnection conn)
+        {
+            base.OnClientDisconnect(conn);
+            rollbackSession.DeactivateSession();
         }
         #endregion
 
@@ -103,7 +127,8 @@ namespace URollback.Examples.VectorWar
             {
                 return;
             }
-            for (int i = 0; i < rsMsg.clients.Count; i++)
+
+            for (int i = 0; i < rsMsg.clients.Length; i++)
             {
                 switch (rsMsg.msgType)
                 {

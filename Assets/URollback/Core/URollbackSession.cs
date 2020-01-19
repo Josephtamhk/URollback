@@ -7,11 +7,17 @@ namespace URollback.Core
     [System.Serializable]
     public class URollbackSession
     {
-        public bool SessionActive { get { return sessionActive; } }
+        public delegate void ClientAddedAction(int identifier);
+        public event ClientAddedAction OnClientAdded;
+        public delegate void ClientRemovedAction(int identifier);
+        public event ClientRemovedAction OnClientRemoved;
 
-        private Dictionary<int, URollbackClient> clients = new Dictionary<int, URollbackClient>();
-        private bool sessionActive;
-        private int frameDelay;
+        public bool SessionActive { get { return sessionActive; } }
+        public IReadOnlyDictionary<int, URollbackClient> Clients { get { return clients; } }
+
+        protected Dictionary<int, URollbackClient> clients = new Dictionary<int, URollbackClient>();
+        protected bool sessionActive;
+        protected int frameDelay;
 
         /// <summary>
         /// Activates a session.
@@ -77,6 +83,7 @@ namespace URollback.Core
                 return null;
             }
             clients.Add(identifier, client);
+            OnClientAdded?.Invoke(identifier);
             return clients[identifier];
         }
 
@@ -88,6 +95,7 @@ namespace URollback.Core
         public void RemoveClient(int identifier)
         {
             clients.Remove(identifier);
+            OnClientRemoved?.Invoke(identifier);
         }
 
         /// <summary>

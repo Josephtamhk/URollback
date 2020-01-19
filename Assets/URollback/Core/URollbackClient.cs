@@ -8,13 +8,13 @@ namespace URollback.Core
     public class URollbackClient
     {
         public delegate void RTTChangedAction();
-        public static event RTTChangedAction OnRTTChanged;
+        public event RTTChangedAction OnRTTChanged;
 
         public int Identifier { get { return identifier; } }
         public double RTT { get { return rtt; } set { rtt = value; OnRTTChanged?.Invoke(); } }
 
-        [SerializeField] private int identifier;
-        [SerializeField] private double rtt;
+        [SerializeField] protected int identifier;
+        [SerializeField] protected double rtt;
 
         public URollbackClient(int identifier)
         {

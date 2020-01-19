@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using URollback.Core;
 
 namespace URollback.Examples.VectorWar
 {
@@ -23,6 +24,11 @@ namespace URollback.Examples.VectorWar
 
         private void Update()
         {
+            if (!hasAuthority)
+            {
+                return;
+            }
+
             rttUpdateTimer += Time.deltaTime;
             if(rttUpdateTimer > 2.5f)
             {
