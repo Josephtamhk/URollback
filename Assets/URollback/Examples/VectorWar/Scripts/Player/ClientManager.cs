@@ -16,6 +16,8 @@ namespace URollback.Examples.VectorWar
 
         [SyncVar] public int connectionID;
 
+        private List<List<PlayerInputDefinition>> playersInputs = new List<List<PlayerInputDefinition>>();
+
         private void Start()
         {
             gameManager = GameManager.instance;
