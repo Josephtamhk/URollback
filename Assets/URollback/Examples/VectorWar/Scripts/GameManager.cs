@@ -29,7 +29,6 @@ namespace URollback.Examples.VectorWar
             }
             if(networkManager.rollbackSession.Clients.Count >= networkManager.maxConnections)
             {
-                Debug.Log($"Starting game with {networkManager.rollbackSession.Clients.Count} players.");
                 ServerStartGame();
             }
         }
