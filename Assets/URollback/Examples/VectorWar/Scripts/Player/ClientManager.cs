@@ -71,7 +71,7 @@ namespace URollback.Examples.VectorWar
         [ClientRpc]
         public void RpcSpawnPlayers(int spawnIndex)
         {
-
+            Debug.Log($"Client spawned player for {connectionID}");
         }
     }
 }

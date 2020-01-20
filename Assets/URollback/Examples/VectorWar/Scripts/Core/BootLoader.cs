@@ -10,8 +10,9 @@ namespace URollback.Examples.VectorWar
         Windows.ConsoleWindow cWindow;
         Windows.ConsoleInput cInput;
         ServerCommandReader cReader = new ServerCommandReader();
-
         List<string> commandLineArgs = new List<string>();
+
+        [SerializeField] private GameManager gameManager;
 
         // Start is called before the first frame update
         void Start()
@@ -92,7 +93,7 @@ namespace URollback.Examples.VectorWar
                 }
                 if (arg == "-autostart")
                 {
-                    (NetworkManager.singleton as NetworkManager).autoStartGame = true;
+                    gameManager.autoStartGame = true;
                 }
                 if (arg.Contains("-playercount"))
                 {

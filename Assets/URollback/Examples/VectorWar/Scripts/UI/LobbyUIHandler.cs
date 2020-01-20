@@ -37,5 +37,10 @@ namespace URollback.Examples.VectorWar
                 lobbyPlayers.Add(c.Identifier, lobbyPlayerUI);
             }
         }
+
+        public void ButtonStartMatch()
+        {
+            gameManager.ServerStartGame();
+        }
     }
 }

@@ -156,11 +156,36 @@ namespace URollback.Core
             }
         }
 
+        /// <summary>
+        /// Advances the input frame coutner for a remote client,
+        /// and calculates a remoteFrameLag value for the client.
+        /// Call this right after you get the input from a remote client
+        /// and have added it to their list of inputs.
+        /// </summary>
+        /// <param name="localIdentifier"></param>
+        /// <param name="identifier"></param>
         public virtual void AdvanceRemoteInput(int localIdentifier, int identifier)
         {
             URollbackClient localClient = GetClient(localIdentifier);
             URollbackClient remoteClient = GetClient(identifier);
             remoteClient.AdvanceRemoteInputFrame(localClient.InputFrame);
+        }
+
+        /// <summary>
+        /// Get the client with the highest RTT value.
+        /// </summary>
+        /// <returns></returns>
+        public virtual URollbackClient GetHighestRTTClient()
+        {
+            URollbackClient highestRTTClient = new URollbackClient(-1);
+            foreach(URollbackClient client in clients.Values)
+            {
+                if(client.RTT >= highestRTTClient.RTT)
+                {
+                    highestRTTClient = client;
+                }
+            }
+            return highestRTTClient;
         }
     }
 }

@@ -14,7 +14,6 @@ namespace URollback.Examples.VectorWar
 
         public URollbackSession rollbackSession  = new URollbackSession();
 
-        public bool autoStartGame;
         public ClientManager clientManagerPrefab;
         public GameManager gameManager;
 
@@ -39,7 +38,6 @@ namespace URollback.Examples.VectorWar
         {
             Debug.Log($"Starting server for {playerCount} players.");
             maxConnections = playerCount;
-            autoStartGame = true;
             StartServer();
         }
 
@@ -113,6 +111,7 @@ namespace URollback.Examples.VectorWar
         {
             NetworkClient.RegisterHandler<URollbackSessionClientsMsg>(OnRollbackSessionClientsMsg);
         }
+
 
         /// <summary>
         /// Sent from server->clients whenever clients join or leave. 

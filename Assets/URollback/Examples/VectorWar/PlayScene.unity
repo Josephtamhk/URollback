@@ -433,6 +433,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkManager: {fileID: 1679165827}
+  spawnPositions:
+  - {x: -3, y: 3}
+  - {x: 3, y: 3}
+  - {x: -3, y: -3}
+  - {x: 3, y: -3}
+  autoStartGame: 0
 --- !u!114 &570251929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -445,6 +451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe3b56646f2e068439e81dbd64a5e196, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 570251928}
 --- !u!1 &701249050
 GameObject:
   m_ObjectHideFlags: 0
@@ -1070,7 +1077,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1401349861}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1921762824}
+        m_MethodName: ButtonStartMatch
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1401349861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1318,7 +1336,6 @@ MonoBehaviour:
   playerSpawnMethod: 0
   spawnPrefabs:
   - {fileID: 7536545214159737912, guid: 4321a8c4b3436fa4cbb9210b2642f0d1, type: 3}
-  autoStartGame: 0
   clientManagerPrefab: {fileID: 6215753095315745708, guid: 4321a8c4b3436fa4cbb9210b2642f0d1,
     type: 3}
   gameManager: {fileID: 570251928}
