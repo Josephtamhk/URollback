@@ -35,6 +35,11 @@ public class TimeStepManager
         resync = true;
     }
 
+    public void Clear()
+    {
+        accumulator = 0;
+    }
+
     public void Update(float delta)
     {
         if (resync)
@@ -64,5 +69,10 @@ public class TimeStepManager
             OnUpdate?.Invoke(timestep);
             accumulator -= timestep;
         }
+    }
+
+    public void ManualUpdate()
+    {
+        OnUpdate?.Invoke(timestep);
     }
 }
