@@ -11,8 +11,9 @@ namespace URollback.Examples.VectorWar
         public static GameManager instance;
 
         [SerializeField] private NetworkManager networkManager;
-        public List<Vector2> spawnPositions = new List<Vector2>();
+        [SerializeField] private MatchManager matchManager;
 
+        public List<Vector2> spawnPositions = new List<Vector2>();
         public bool autoStartGame;
 
         private void Awake()

@@ -16,6 +16,7 @@ public class TimeStepManager
     protected float[] timestepClampTimes;
     protected float accumulator;
 
+    protected bool active;
     protected bool resync;
 
     public TimeStepManager(float timestep, float timescale, float timestepUpperClamp, float timestepLowerClamp)
@@ -25,6 +26,7 @@ public class TimeStepManager
         accumulator = 0;
         timestepClampTimes = new float[] { timestepUpperClamp, timestepLowerClamp };
         resync = false;
+        active = false;
     }
 
     /// <summary>
@@ -40,8 +42,22 @@ public class TimeStepManager
         accumulator = 0;
     }
 
+    public void Activate()
+    {
+        active = true;
+    }
+
+    public void Deactivate()
+    {
+        active = false;
+    }
+
     public void Update(float delta)
     {
+        if (!active)
+        {
+            return;
+        }
         if (resync)
         {
             accumulator = 0;
