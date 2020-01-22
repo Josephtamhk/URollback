@@ -40,7 +40,7 @@ namespace URollback.Examples.VectorWar
 
         public void ButtonStartMatch()
         {
-            gameManager.ServerStartGame();
+            gameManager.ServerStartMatch();
         }
     }
 }

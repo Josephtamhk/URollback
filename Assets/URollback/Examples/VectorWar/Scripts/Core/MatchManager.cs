@@ -19,7 +19,7 @@ namespace URollback.Examples.VectorWar
 
         public void Update()
         {
-
+            timeStepManager.Update(Time.deltaTime);
         }
     }
 }

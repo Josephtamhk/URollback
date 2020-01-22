@@ -14,7 +14,6 @@ namespace URollback.Examples.VectorWar
 
         [SerializeField] private GameManager gameManager;
 
-        // Start is called before the first frame update
         void Start()
         {
             GetCommandLineArgs();
@@ -93,7 +92,7 @@ namespace URollback.Examples.VectorWar
                 }
                 if (arg == "-autostart")
                 {
-                    gameManager.autoStartGame = true;
+                    gameManager.autoStartMatch = true;
                 }
                 if (arg.Contains("-playercount"))
                 {

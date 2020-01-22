@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using URollback.Core;
 using Mirror;
+using System;
 
 namespace URollback.Examples.VectorWar
 {
@@ -14,36 +15,43 @@ namespace URollback.Examples.VectorWar
         [SerializeField] private MatchManager matchManager;
 
         public List<Vector2> spawnPositions = new List<Vector2>();
-        public bool autoStartGame;
+        public bool autoStartMatch;
 
         private void Awake()
         {
             instance = this;
-            networkManager.rollbackSession.OnClientAdded += AutoStartGame;
+            networkManager.rollbackSession.OnClientAdded += AutoStartMatch;
+            networkManager.OnClientStarted += () => { NetworkClient.RegisterHandler<InitMatchMsg>(InitializeMatch); };
         }
 
-        private void AutoStartGame(int identifier)
+        /// <summary>
+        /// Whenever a client joins, we check if we
+        /// should automatically start the match.
+        /// </summary>
+        /// <param name="identifier"></param>
+        private void AutoStartMatch(int identifier)
         {
-            if (!autoStartGame || !NetworkServer.active)
+            if (!autoStartMatch || !NetworkServer.active)
             {
                 return;
             }
             if(networkManager.rollbackSession.Clients.Count >= networkManager.maxConnections)
             {
-                ServerStartGame();
+                ServerStartMatch();
             }
         }
 
         /// <summary>
-        /// Called on the server when we want the game to start
+        /// Called on the server when we want the match to start
         /// with the current players.
         /// </summary>
-        public void ServerStartGame()
+        public void ServerStartMatch()
         {
             if (!NetworkServer.active)
             {
                 return;
             }
+            NetworkServer.SendToAll(new InitMatchMsg());
             int spawnPosCounter = 0;
             foreach(NetworkConnectionToClient client in NetworkServer.connections.Values)
             {
@@ -52,6 +60,11 @@ namespace URollback.Examples.VectorWar
                 clientManager.ServerSpawnPlayers(spawnPosCounter);
                 spawnPosCounter++;
             }
+        }
+
+        private void InitializeMatch(NetworkConnection conn, InitMatchMsg msg)
+        {
+            matchManager = new MatchManager(this, networkManager);
         }
     }
 }

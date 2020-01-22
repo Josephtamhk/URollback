@@ -12,6 +12,15 @@ namespace URollback.Examples.VectorWar
     {
         public static NetworkManager instance;
 
+        public delegate void ServerStartedAction();
+        public event ServerStartedAction OnServerStarted;
+        public delegate void ClientStartedAction();
+        public event ClientStartedAction OnClientStarted;
+        public delegate void ServerClientJoinAction();
+        public event ServerClientJoinAction ServerOnClientJoined;
+        public delegate void ClientJoinedServerAction();
+        public event ClientJoinedServerAction OnClientJoinedServer;
+
         public URollbackSession rollbackSession  = new URollbackSession();
 
         public ClientManager clientManagerPrefab;
@@ -58,12 +67,14 @@ namespace URollback.Examples.VectorWar
             base.OnStartServer();
             SetupServerNetworkMessages();
             rollbackSession.StartSession();
+            OnServerStarted?.Invoke();
         }
 
         public override void OnStartClient()
         {
             base.OnStartClient();
             SetupClientNetworkMessages();
+            OnClientStarted?.Invoke();
         }
 
         public override void OnServerConnect(NetworkConnection conn)
@@ -78,6 +89,7 @@ namespace URollback.Examples.VectorWar
             // Send the client information on all connected clients.
             URollbackSessionClientsMsg clientsMsg = new URollbackSessionClientsMsg(URollbackSessionClientsMsgType.Add, rollbackSession.Clients.Values.ToArray());
             NetworkServer.SendToAll(clientsMsg);
+            ServerOnClientJoined?.Invoke();
         }
 
         public override void OnServerDisconnect(NetworkConnection conn)
@@ -93,6 +105,7 @@ namespace URollback.Examples.VectorWar
         {
             base.OnClientConnect(conn);
             rollbackSession.StartSession();
+            OnClientJoinedServer?.Invoke();
         }
 
         public override void OnClientDisconnect(NetworkConnection conn)
