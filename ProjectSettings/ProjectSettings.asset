@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
+  companyName: 
   productName: VectorWar
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -501,7 +501,7 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   scriptingDefineSymbols:
-    1: BUILD_TYPE_VECTORWAR_SERVER_;BUILD_PLATFORM_PC;BUILD_ARCH_WINDOWSX64;LITENETLIB4MIRROR;MIRROR;MIRROR_1726_OR_NEWER;MIRROR_3_0_OR_NEWER;MIRROR_3_12_OR_NEWER;MIRROR_4_0_OR_NEWER;ODIN_INSPECTOR;IGNORANCE;IGNORANCE_1;IGNORANCE_1_3
+    1: BUILD_TYPE_VECTORWAR;BUILD_PLATFORM_PC;BUILD_ARCH_WINDOWSX64
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration: {}
