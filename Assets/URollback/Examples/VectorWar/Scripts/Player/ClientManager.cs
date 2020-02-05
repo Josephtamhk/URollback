@@ -72,6 +72,8 @@ namespace URollback.Examples.VectorWar
         public void RpcSpawnPlayers(int spawnIndex)
         {
             Debug.Log($"Client spawned player for {connectionID}");
+            GameObject player = Instantiate(playerPrefab, gameManager.spawnPositions[spawnIndex], Quaternion.identity);
+            gameManager.MatchManager.simObjectManager.RegisterObject(player.GetComponent<ISimObject>());
         }
     }
 }
