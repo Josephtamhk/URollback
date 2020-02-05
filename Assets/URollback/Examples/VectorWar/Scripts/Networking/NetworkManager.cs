@@ -23,8 +23,9 @@ namespace URollback.Examples.VectorWar
 
         public URollbackSession rollbackSession  = new URollbackSession();
 
-        public ClientManager clientManagerPrefab;
-        public GameManager gameManager;
+        [Header("References")]
+        [SerializeField] private ClientManager clientManagerPrefab;
+        [SerializeField] private GameManager gameManager;
 
         [Header("UI")]
         [SerializeField] private InputField ipField;
@@ -35,7 +36,6 @@ namespace URollback.Examples.VectorWar
             instance = this;
         }
 
-        #region Connecting
         public void StartHosting(int playerCount)
         {
             Debug.Log($"Starting host for {playerCount} players.");
@@ -50,6 +50,9 @@ namespace URollback.Examples.VectorWar
             StartServer();
         }
 
+        /// <summary>
+        /// Called by the "Connect" UI button.
+        /// </summary>
         public void ConnectToServer()
         {
             ConnectToServer(ipField.text);
@@ -57,7 +60,7 @@ namespace URollback.Examples.VectorWar
 
         public void ConnectToServer(string ip)
         {
-            Debug.Log($"Trying server connection to {ip}.");
+            Debug.Log($"Trying to connect to {ip}.");
             networkAddress = ip;
             StartClient();
         }
@@ -77,6 +80,11 @@ namespace URollback.Examples.VectorWar
             OnClientStarted?.Invoke();
         }
 
+        /// <summary>
+        /// Whenever a client connects to the server, 
+        /// we want to add them to the rollback session and tell all clients to do the same.
+        /// </summary>
+        /// <param name="conn"></param>
         public override void OnServerConnect(NetworkConnection conn)
         {
             base.OnServerConnect(conn);
@@ -86,12 +94,18 @@ namespace URollback.Examples.VectorWar
             clientManager.GetComponent<ClientManager>().connectionID = conn.connectionId;
             NetworkServer.AddPlayerForConnection(conn, clientManager);
             rollbackSession.AddClient(conn.connectionId);
-            // Send the client information on all connected clients.
+            
+            // Tell clients to add this client to the list.
             URollbackSessionClientsMsg clientsMsg = new URollbackSessionClientsMsg(URollbackSessionClientsMsgType.Add, rollbackSession.Clients.Values.ToArray());
             NetworkServer.SendToAll(clientsMsg);
             ServerOnClientJoined?.Invoke();
         }
 
+        /// <summary>
+        /// Whenever a client disconnects from the server, 
+        /// we want to remove them from the rollback session and tell all clients to do the same.
+        /// </summary>
+        /// <param name="conn"></param>
         public override void OnServerDisconnect(NetworkConnection conn)
         {
             base.OnServerDisconnect(conn);
@@ -101,19 +115,29 @@ namespace URollback.Examples.VectorWar
             NetworkServer.SendToAll(new URollbackSessionClientsMsg(URollbackSessionClientsMsgType.Remove, new URollbackClient[] { new URollbackClient(conn.connectionId) }));
         }
 
+        /// <summary>
+        /// Whenever the client connects to the server,
+        /// they need to start the rollback session.
+        /// </summary>
+        /// <param name="conn"></param>
         public override void OnClientConnect(NetworkConnection conn)
         {
             base.OnClientConnect(conn);
+            Debug.Log("Connected to server.");
             rollbackSession.StartSession();
             OnClientJoinedServer?.Invoke();
         }
 
+        /// <summary>
+        /// Whenever the client disconnects from the server,
+        /// you should end the rollback session.
+        /// </summary>
+        /// <param name="conn"></param>
         public override void OnClientDisconnect(NetworkConnection conn)
         {
             base.OnClientDisconnect(conn);
             rollbackSession.EndSession();
         }
-        #endregion
 
         public void SetupServerNetworkMessages()
         {
@@ -134,7 +158,7 @@ namespace URollback.Examples.VectorWar
         /// <param name="rsMsg"></param>
         public void OnRollbackSessionClientsMsg(NetworkConnection conn, URollbackSessionClientsMsg rsMsg)
         {
-            // Ignore the host, since he is the server.
+            // Don't do this on the server (or host), as they sent the message.
             if (NetworkServer.active)
             {
                 return;
