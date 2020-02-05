@@ -11,6 +11,8 @@ namespace URollback.Examples.VectorWar
     {
         public static GameManager instance;
 
+        public MatchManager MatchManager { get { return matchManager; } }
+
         [SerializeField] private NetworkManager networkManager;
         [SerializeField] private MatchManager matchManager;
 
@@ -42,8 +44,7 @@ namespace URollback.Examples.VectorWar
         }
 
         /// <summary>
-        /// Called on the server when we want the match to start
-        /// with the current players.
+        /// Called on the server when we want the match to start with the current players.
         /// </summary>
         public void ServerStartMatch()
         {
@@ -51,7 +52,9 @@ namespace URollback.Examples.VectorWar
             {
                 return;
             }
+            // Tell all clients to start a match with the parameters passed.
             NetworkServer.SendToAll(new InitMatchMsg());
+            // Spawn the client players.
             int spawnPosCounter = 0;
             foreach(NetworkConnectionToClient client in NetworkServer.connections.Values)
             {
@@ -62,6 +65,11 @@ namespace URollback.Examples.VectorWar
             }
         }
 
+        /// <summary>
+        /// Called from the server to all clients during the match starting process.
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="msg"></param>
         private void InitializeMatch(NetworkConnection conn, InitMatchMsg msg)
         {
             matchManager = new MatchManager(this, networkManager);
