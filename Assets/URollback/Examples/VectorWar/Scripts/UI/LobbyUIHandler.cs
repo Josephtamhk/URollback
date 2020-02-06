@@ -17,8 +17,8 @@ namespace URollback.Examples.VectorWar
 
         private void Awake()
         {
-            networkManager.rollbackSession.OnClientAdded += UpdatePlayerList;
-            networkManager.rollbackSession.OnClientRemoved += UpdatePlayerList;
+            gameManager.rollbackSession.OnClientAdded += UpdatePlayerList;
+            gameManager.rollbackSession.OnClientRemoved += UpdatePlayerList;
         }
 
         private void UpdatePlayerList(int identifier)
@@ -28,7 +28,7 @@ namespace URollback.Examples.VectorWar
             {
                 Destroy(child.gameObject);
             }
-            foreach(URollbackClient c in networkManager.rollbackSession.Clients.Values)
+            foreach(URollbackClient c in gameManager.rollbackSession.Clients.Values)
             {
                 GameObject lobbyPlayer = Instantiate(lobbyPlayerItemPrefab, lobbyPlayersParent, false);
                 LobbyPlayerItemUI lobbyPlayerUI = lobbyPlayer.GetComponent<LobbyPlayerItemUI>();

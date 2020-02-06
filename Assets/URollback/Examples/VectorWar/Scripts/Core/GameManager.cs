@@ -16,13 +16,17 @@ namespace URollback.Examples.VectorWar
         [SerializeField] private NetworkManager networkManager;
         [SerializeField] private MatchManager matchManager;
 
+        public URollbackSession rollbackSession = new URollbackSession();
+
         public List<Vector2> spawnPositions = new List<Vector2>();
         public bool autoStartMatch;
 
         private void Awake()
         {
             instance = this;
-            networkManager.rollbackSession.OnClientAdded += AutoStartMatch;
+            rollbackSession.OnClientAdded += AutoStartMatch;
+            networkManager.OnServerStarted += () => { rollbackSession.StartSession(); };
+            networkManager.OnClientJoinedServer += () => { rollbackSession.StartSession(); };
             networkManager.OnClientStarted += () => { NetworkClient.RegisterHandler<InitMatchMsg>(InitializeMatch); };
         }
 
@@ -37,7 +41,7 @@ namespace URollback.Examples.VectorWar
             {
                 return;
             }
-            if(networkManager.rollbackSession.Clients.Count >= networkManager.maxConnections)
+            if(rollbackSession.Clients.Count >= networkManager.maxConnections)
             {
                 ServerStartMatch();
             }

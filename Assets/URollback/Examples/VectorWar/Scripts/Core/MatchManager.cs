@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace URollback.Examples.VectorWar
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class MatchManager
     {
         private GameManager gameManager;
@@ -16,7 +19,7 @@ namespace URollback.Examples.VectorWar
             this.gameManager = gameManager;
             this.networkManager = networkManager;
             timeStepManager = new TimeStepManager(60.0f, 1.0f, 120.0f, 30.0f);
-            simObjectManager = new SimObjectManager(networkManager.rollbackSession);
+            simObjectManager = new SimObjectManager(gameManager.rollbackSession);
             timeStepManager.OnUpdate += simObjectManager.Update;
         }
 

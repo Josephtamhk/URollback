@@ -21,8 +21,6 @@ namespace URollback.Examples.VectorWar
         public delegate void ClientJoinedServerAction();
         public event ClientJoinedServerAction OnClientJoinedServer;
 
-        public URollbackSession rollbackSession  = new URollbackSession();
-
         [Header("References")]
         [SerializeField] private ClientManager clientManagerPrefab;
         [SerializeField] private GameManager gameManager;
@@ -69,7 +67,6 @@ namespace URollback.Examples.VectorWar
         {
             base.OnStartServer();
             SetupServerNetworkMessages();
-            rollbackSession.StartSession();
             OnServerStarted?.Invoke();
         }
 
@@ -93,10 +90,11 @@ namespace URollback.Examples.VectorWar
             GameObject clientManager = GameObject.Instantiate(clientManagerPrefab.gameObject, Vector3.zero, Quaternion.identity);
             clientManager.GetComponent<ClientManager>().connectionID = conn.connectionId;
             NetworkServer.AddPlayerForConnection(conn, clientManager);
-            rollbackSession.AddClient(conn.connectionId);
+            gameManager.rollbackSession.AddClient(conn.connectionId);
             
             // Tell clients to add this client to the list.
-            URollbackSessionClientsMsg clientsMsg = new URollbackSessionClientsMsg(URollbackSessionClientsMsgType.Add, rollbackSession.Clients.Values.ToArray());
+            URollbackSessionClientsMsg clientsMsg = new URollbackSessionClientsMsg(URollbackSessionClientsMsgType.Add, 
+                gameManager.rollbackSession.Clients.Values.ToArray());
             NetworkServer.SendToAll(clientsMsg);
             ServerOnClientJoined?.Invoke();
         }
@@ -111,7 +109,7 @@ namespace URollback.Examples.VectorWar
             base.OnServerDisconnect(conn);
             Debug.Log($"Client {conn.connectionId} disconnected from server.");
 
-            rollbackSession.RemoveClient(conn.connectionId);
+            gameManager.rollbackSession.RemoveClient(conn.connectionId);
             NetworkServer.SendToAll(new URollbackSessionClientsMsg(URollbackSessionClientsMsgType.Remove, new URollbackClient[] { new URollbackClient(conn.connectionId) }));
         }
 
@@ -124,7 +122,6 @@ namespace URollback.Examples.VectorWar
         {
             base.OnClientConnect(conn);
             Debug.Log("Connected to server.");
-            rollbackSession.StartSession();
             OnClientJoinedServer?.Invoke();
         }
 
@@ -136,7 +133,7 @@ namespace URollback.Examples.VectorWar
         public override void OnClientDisconnect(NetworkConnection conn)
         {
             base.OnClientDisconnect(conn);
-            rollbackSession.EndSession();
+            gameManager.rollbackSession.EndSession();
         }
 
         public void SetupServerNetworkMessages()
@@ -169,14 +166,14 @@ namespace URollback.Examples.VectorWar
                 switch (rsMsg.msgType)
                 {
                     case URollbackSessionClientsMsgType.Add:
-                        if (rollbackSession.HasClient(rsMsg.clients[i].Identifier))
+                        if (gameManager.rollbackSession.HasClient(rsMsg.clients[i].Identifier))
                         {
                             continue;
                         }
-                        rollbackSession.AddClient(rsMsg.clients[i].Identifier, rsMsg.clients[i]);
+                        gameManager.rollbackSession.AddClient(rsMsg.clients[i].Identifier, rsMsg.clients[i]);
                         break;
                     case URollbackSessionClientsMsgType.Remove:
-                        rollbackSession.RemoveClient(rsMsg.clients[i].Identifier);
+                        gameManager.rollbackSession.RemoveClient(rsMsg.clients[i].Identifier);
                         break;
                 }
             }

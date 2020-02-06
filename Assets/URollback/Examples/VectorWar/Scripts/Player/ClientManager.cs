@@ -43,14 +43,14 @@ namespace URollback.Examples.VectorWar
 
         private void SetRTT()
         {
-            networkManager.rollbackSession.GetClient(NetworkClient.connection.connectionId).RTT = rtt;
+            gameManager.rollbackSession.GetClient(NetworkClient.connection.connectionId).RTT = rtt;
             CmdUpdateRTT(rtt);
         }
 
         [Command]
         public void CmdUpdateRTT(double rtt)
         {
-            networkManager.rollbackSession.GetClient(NetworkClient.connection.connectionId).RTT = rtt;
+            gameManager.rollbackSession.GetClient(NetworkClient.connection.connectionId).RTT = rtt;
             this.rtt = rtt;
             RpcUpdateRTT(rtt);
         }
@@ -58,7 +58,7 @@ namespace URollback.Examples.VectorWar
         [ClientRpc]
         public void RpcUpdateRTT(double rtt)
         {
-            networkManager.rollbackSession.GetClient(NetworkClient.connection.connectionId).RTT = rtt;
+            gameManager.rollbackSession.GetClient(NetworkClient.connection.connectionId).RTT = rtt;
             this.rtt = rtt;
         }
 
