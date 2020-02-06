@@ -20,6 +20,8 @@ namespace URollback.Examples.VectorWar
         public event ServerClientJoinAction ServerOnClientJoined;
         public delegate void ClientJoinedServerAction();
         public event ClientJoinedServerAction OnClientJoinedServer;
+        public delegate void ClientDisconnectServerAction();
+        public event ClientDisconnectServerAction OnClientDisconnectServer;
 
         [Header("References")]
         [SerializeField] private ClientManager clientManagerPrefab;
@@ -113,11 +115,6 @@ namespace URollback.Examples.VectorWar
             NetworkServer.SendToAll(new URollbackSessionClientsMsg(URollbackSessionClientsMsgType.Remove, new URollbackClient[] { new URollbackClient(conn.connectionId) }));
         }
 
-        /// <summary>
-        /// Whenever the client connects to the server,
-        /// they need to start the rollback session.
-        /// </summary>
-        /// <param name="conn"></param>
         public override void OnClientConnect(NetworkConnection conn)
         {
             base.OnClientConnect(conn);
@@ -125,15 +122,10 @@ namespace URollback.Examples.VectorWar
             OnClientJoinedServer?.Invoke();
         }
 
-        /// <summary>
-        /// Whenever the client disconnects from the server,
-        /// you should end the rollback session.
-        /// </summary>
-        /// <param name="conn"></param>
         public override void OnClientDisconnect(NetworkConnection conn)
         {
             base.OnClientDisconnect(conn);
-            gameManager.rollbackSession.EndSession();
+            OnClientDisconnectServer?.Invoke();
         }
 
         public void SetupServerNetworkMessages()

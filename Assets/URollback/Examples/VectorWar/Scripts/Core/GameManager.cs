@@ -25,9 +25,13 @@ namespace URollback.Examples.VectorWar
         {
             instance = this;
             rollbackSession.OnClientAdded += AutoStartMatch;
+            networkManager.OnClientStarted += () => { NetworkClient.RegisterHandler<InitMatchMsg>(InitializeMatch); };
+            // Whenever a client joins the server/the server starts up,
+            // a rollback session should be started.
             networkManager.OnServerStarted += () => { rollbackSession.StartSession(); };
             networkManager.OnClientJoinedServer += () => { rollbackSession.StartSession(); };
-            networkManager.OnClientStarted += () => { NetworkClient.RegisterHandler<InitMatchMsg>(InitializeMatch); };
+            // Whenver we leave the server, the rollback session should be ended.
+            networkManager.OnClientDisconnectServer += () => { rollbackSession.EndSession(); };
         }
 
         /// <summary>
