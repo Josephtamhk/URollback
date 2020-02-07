@@ -29,6 +29,8 @@ namespace URollback.Examples.VectorWar
 
         [Header("UI")]
         [SerializeField] private InputField ipField;
+        [SerializeField] private GameObject connectionWindow;
+        [SerializeField] private GameObject disconnectWindow;
 
         public override void Awake()
         {
@@ -65,6 +67,18 @@ namespace URollback.Examples.VectorWar
             StartClient();
         }
 
+        public void Disconnect()
+        {
+            if (NetworkServer.active)
+            {
+                StopServer();
+            }
+            else
+            {
+                StopClient();
+            }
+        }
+
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -75,8 +89,17 @@ namespace URollback.Examples.VectorWar
         public override void OnStartClient()
         {
             base.OnStartClient();
+            connectionWindow.SetActive(false);
+            disconnectWindow.SetActive(true);
             SetupClientNetworkMessages();
             OnClientStarted?.Invoke();
+        }
+
+        public override void OnStopClient()
+        {
+            base.OnStopClient();
+            connectionWindow.SetActive(true);
+            disconnectWindow.SetActive(false);
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using URollback.Core;
 
 namespace URollback.Examples.VectorWar
 {
@@ -11,5 +12,8 @@ namespace URollback.Examples.VectorWar
 
         void SimUpdate();
         void SimLateUpdate();
+
+        URollbackEntityData SaveData();
+        void LoadData(URollbackEntityData entityData);
     }
 }

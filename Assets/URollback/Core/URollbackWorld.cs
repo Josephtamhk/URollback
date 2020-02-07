@@ -10,6 +10,8 @@ namespace URollback.Core
 {
     public class URollbackWorld
     {
+        public int IDCounter { get { return idCounter; } }
+
         protected int idCounter = 0;
         protected Dictionary<int, URollbackEntity> entities = new Dictionary<int, URollbackEntity>();
 

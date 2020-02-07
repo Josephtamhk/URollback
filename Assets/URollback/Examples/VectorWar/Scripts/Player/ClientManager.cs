@@ -74,6 +74,12 @@ namespace URollback.Examples.VectorWar
             Debug.Log($"Client spawned player for {connectionID}");
             GameObject player = Instantiate(playerPrefab, gameManager.spawnPositions[spawnIndex], Quaternion.identity);
             gameManager.MatchManager.simObjectManager.RegisterObject(player.GetComponent<ISimObject>());
+            player.GetComponent<PlayerInput>().Init(this);
+        }
+
+        public PlayerInputDefinition GetInput(int player)
+        {
+            return new PlayerInputDefinition();
         }
     }
 }
