@@ -14,11 +14,14 @@ namespace URollback.Core
 
         public bool SessionActive { get { return sessionActive; } }
         public IReadOnlyDictionary<int, URollbackClient> Clients { get { return clients; } }
+        public URollbackWorld URollbackWorld { get { return uRollbackWorld; } }
 
         protected Dictionary<int, URollbackClient> clients = new Dictionary<int, URollbackClient>();
         protected bool sessionActive;
         protected int frameDelay;
         protected int currentFrame;
+
+        protected URollbackWorld uRollbackWorld;
 
         /// <summary>
         /// Activates a session.
@@ -32,7 +35,7 @@ namespace URollback.Core
             {
                 return URollbackErrorCode.INVALID_SESSION;
             }
-            currentFrame = 0;
+            ResetSession();
             sessionActive = true;
             return URollbackErrorCode.OK;
         }
@@ -45,6 +48,7 @@ namespace URollback.Core
         public virtual void EndSession()
         {
             clients.Clear();
+            uRollbackWorld = null;
             sessionActive = false;
         }
 
@@ -57,6 +61,7 @@ namespace URollback.Core
         public virtual void ResetSession()
         {
             currentFrame = 0;
+            uRollbackWorld = new URollbackWorld();
         }
 
         /// <summary>
