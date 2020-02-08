@@ -15,11 +15,23 @@ namespace URollback.Core
         public bool SessionActive { get { return sessionActive; } }
         public IReadOnlyDictionary<int, URollbackClient> Clients { get { return clients; } }
         public URollbackWorld URollbackWorld { get { return uRollbackWorld; } }
+        /// <summary>
+        /// Returns the current frame that is being simulation. If we're rolling back,
+        /// this returns the frame that the rollback is currently on.
+        /// </summary>
+        public int CurrentSimulationFrame { get { return inRollback ? currentRollbackFrame : currentFrame; } }
+        /// <summary>
+        /// Returns the current frame we're on, ignoring what rollback frame
+        /// we're on.
+        /// </summary>
+        public int CurrentFrame { get { return currentFrame; } }
 
         protected Dictionary<int, URollbackClient> clients = new Dictionary<int, URollbackClient>();
         protected bool sessionActive;
+        protected bool inRollback;
         protected int frameDelay;
         protected int currentFrame;
+        protected int currentRollbackFrame;
 
         protected URollbackWorld uRollbackWorld;
 

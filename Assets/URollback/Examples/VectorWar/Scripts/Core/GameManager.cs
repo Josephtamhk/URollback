@@ -71,6 +71,7 @@ namespace URollback.Examples.VectorWar
                 clientManager.ServerSpawnPlayers(spawnPosCounter);
                 spawnPosCounter++;
             }
+            // Start the match.
         }
 
         /// <summary>

@@ -14,12 +14,10 @@ namespace URollback.Examples.VectorWar
         private URollbackSession uRollbackSession;
 
         private List<ISimObject> simObjects = new List<ISimObject>();
-        private int currentSpawnID;
 
         public SimObjectManager(URollbackSession uRollbackSession)
         {
             this.uRollbackSession = uRollbackSession;
-            currentSpawnID = 0;
         }
 
         public void Update(float dt)
@@ -44,9 +42,9 @@ namespace URollback.Examples.VectorWar
         /// <param name="simObject"></param>
         public void RegisterObject(ISimObject simObject)
         {
+            int spawnID = uRollbackSession.URollbackWorld.AddEntity(simObject.SaveData());
+            simObject.SimID = spawnID;
             simObjects.Add(simObject);
-            simObject.SimID = currentSpawnID;
-            currentSpawnID++;
         }
 
         /// <summary>

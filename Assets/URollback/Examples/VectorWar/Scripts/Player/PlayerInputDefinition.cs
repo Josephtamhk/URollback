@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace URollback.Examples.VectorWar
 {
-    public struct PlayerInputDefinition
+    public class PlayerInputDefinition
     {
         public sbyte thrustMagnitude; // quantized thrust magnitude. [-127,127] -> [-1,1]
         public sbyte turnMagnitude; // quantized turn magnitude. [-127,127] -> [-1,1]

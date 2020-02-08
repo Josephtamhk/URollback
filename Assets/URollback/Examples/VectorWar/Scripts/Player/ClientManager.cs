@@ -17,7 +17,7 @@ namespace URollback.Examples.VectorWar
 
         [SyncVar] public int connectionID;
 
-        private List<List<PlayerInputDefinition>> playersInputs = new List<List<PlayerInputDefinition>>();
+        private List<PlayerInputLog> playersInputs = new List<PlayerInputLog>();
 
         private void Start()
         {
@@ -62,24 +62,40 @@ namespace URollback.Examples.VectorWar
             this.rtt = rtt;
         }
 
+        /// <summary>
+        /// Tell every client to spawn this client's player.
+        /// </summary>
+        /// <param name="spawnIndex"></param>
         [Server]
         public void ServerSpawnPlayers(int spawnIndex)
         {
             RpcSpawnPlayers(spawnIndex);
         }
 
+        /// <summary>
+        /// Spawn this client's player(s).
+        /// </summary>
+        /// <param name="spawnIndex"></param>
         [ClientRpc]
         public void RpcSpawnPlayers(int spawnIndex)
         {
             Debug.Log($"Client spawned player for {connectionID}");
             GameObject player = Instantiate(playerPrefab, gameManager.spawnPositions[spawnIndex], Quaternion.identity);
             gameManager.MatchManager.simObjectManager.RegisterObject(player.GetComponent<ISimObject>());
-            player.GetComponent<PlayerInput>().Init(this);
+            player.GetComponent<PlayerManager>().Init(this);
         }
 
-        public PlayerInputDefinition GetInput(int player)
+        /// <summary>
+        /// Gets the input of the given player, with an optional
+        /// offset of how far back you want a input for.
+        /// </summary>
+        /// <param name="player">The player you want the input for.</param>
+        /// <param name="framesBack">How many frames before the current one you want. This number
+        /// should not be less than 0.</param>
+        /// <returns></returns>
+        public PlayerInputDefinition GetInput(int player, int framesBack=0)
         {
-            return new PlayerInputDefinition();
+            return playersInputs[player].GetInput(0-framesBack);
         }
     }
 }
