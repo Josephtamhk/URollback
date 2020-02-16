@@ -1,9 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using URollback.Core;
 using Mirror;
 using System;
+using System.Threading.Tasks;
 
 namespace URollback.Examples.VectorWar
 {
@@ -25,13 +25,19 @@ namespace URollback.Examples.VectorWar
         {
             instance = this;
             rollbackSession.OnClientAdded += AutoStartMatch;
-            networkManager.OnClientStarted += () => { NetworkClient.RegisterHandler<InitMatchMsg>(InitializeMatch); };
+            networkManager.OnClientStarted += ClientHandlers;
             // Whenever a client joins the server/the server starts up,
             // a rollback session should be started.
             networkManager.OnServerStarted += () => { rollbackSession.StartSession(); };
             networkManager.OnClientJoinedServer += () => { rollbackSession.StartSession(); };
             // Whenver we leave the server, the rollback session should be ended.
             networkManager.OnClientDisconnectServer += () => { rollbackSession.EndSession(); };
+        }
+
+        private void ClientHandlers()
+        {
+            NetworkClient.RegisterHandler<InitMatchMsg>(InitializeMatch);
+            NetworkClient.RegisterHandler<StartMatchMsg>(StartMatch);
         }
 
         /// <summary>
@@ -60,18 +66,32 @@ namespace URollback.Examples.VectorWar
             {
                 return;
             }
-            // Tell all clients to start a match with the parameters passed.
+            // Tell all clients to initialize match with the parameters passed.
             NetworkServer.SendToAll(new InitMatchMsg());
-            // Spawn the client players.
+
+            // Spawn the client players and get the longest delayed client time.
             int spawnPosCounter = 0;
-            foreach(NetworkConnectionToClient client in NetworkServer.connections.Values)
+            double longestDelay = 0;
+            foreach (NetworkConnectionToClient client in NetworkServer.connections.Values)
             {
                 Debug.Log($"Spawning for {client.connectionId}");
                 ClientManager clientManager = client.identity.GetComponent<ClientManager>();
                 clientManager.ServerSpawnPlayers(spawnPosCounter);
                 spawnPosCounter++;
+
+                if (clientManager.ClientRTT > longestDelay)
+                {
+                    longestDelay = clientManager.ClientRTT;
+                }
             }
-            // Start the match.
+
+            // Start the match. Each client needs to be delayed
+            // depending on the longest delayed client.
+            foreach(NetworkConnectionToClient client in NetworkServer.connections.Values)
+            {
+                ClientManager clientManager = client.identity.GetComponent<ClientManager>();
+                client.Send(new StartMatchMsg((longestDelay - clientManager.ClientRTT) / 2.0));
+            }
         }
 
         /// <summary>
@@ -82,6 +102,28 @@ namespace URollback.Examples.VectorWar
         private void InitializeMatch(NetworkConnection conn, InitMatchMsg msg)
         {
             matchManager = new MatchManager(this, networkManager);
+        }
+
+        /// <summary>
+        /// Called from the server to all clients to start the match.
+        /// We delay before we start the game to make sure all clients are
+        /// relatively in sync.
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="msg"></param>
+        private async void StartMatch(NetworkConnection conn, StartMatchMsg msg)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(msg.delay));
+            matchManager.StartMatch();
+            Debug.Log("Match started.");
+        }
+
+        private void Update()
+        {
+            if (matchManager != null && matchManager.MatchStarted)
+            {
+                matchManager.Update();
+            }
         }
     }
 }

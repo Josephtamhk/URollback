@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-/// <summary>
+﻿/// <summary>
 /// A definition of a entity in a URollbackWorld.
 /// </summary>
 namespace URollback.Core

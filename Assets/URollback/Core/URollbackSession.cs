@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using URollback.Core.Input;
 
 namespace URollback.Core
 {
@@ -11,6 +10,9 @@ namespace URollback.Core
         public event ClientAddedAction OnClientAdded;
         public delegate void ClientRemovedAction(int identifier);
         public event ClientRemovedAction OnClientRemoved;
+
+        public delegate void AdvanceLocalInputAction(int identifier);
+        public event AdvanceLocalInputAction OnAdvanceLocalInput;
 
         public bool SessionActive { get { return sessionActive; } }
         public IReadOnlyDictionary<int, URollbackClient> Clients { get { return clients; } }
@@ -153,24 +155,30 @@ namespace URollback.Core
         }
 
         /// <summary>
-        /// Advances the input frame counter for the local client,
-        /// and adds a localFrameLag value for remote clients.
-        /// Call this right after you add a frame's input to 
-        /// your character's list of inputs.
+        /// Adds an input for the local client, and adds a 
+        /// localFrameLag value for remote clients.
         /// </summary>
         /// <param name="identifier"></param>
-        public virtual void AdvanceLocalInput(int identifier)
+        public virtual URollbackErrorCode AddLocalInput(int identifier, ClientInputDefinition clientInput)
         {
-            URollbackClient localClient = GetClient(identifier);
-            localClient.AdvanceLocalInputFrame();
+            if (!clients.ContainsKey(identifier))
+            {
+                return URollbackErrorCode.INVALID_CLIENT;
+            }
 
+            OnAdvanceLocalInput?.Invoke(identifier);
+            URollbackClient localClient = GetClient(identifier);
+            localClient.AddInput(clientInput);
+
+            // Calculate how many frames we're predicting for remote client(s). 
             foreach(URollbackClient remoteClient in clients.Values)
             {
                 if(remoteClient != localClient)
                 {
-                    remoteClient.AddLocalFrameLag(localClient.InputFrame - remoteClient.InputFrame);
+                    remoteClient.AddLocalFrameLag(localClient.InputFrame);
                 }
             }
+            return URollbackErrorCode.OK;
         }
 
         /// <summary>
@@ -181,11 +189,12 @@ namespace URollback.Core
         /// </summary>
         /// <param name="localIdentifier"></param>
         /// <param name="identifier"></param>
-        public virtual void AdvanceRemoteInput(int localIdentifier, int identifier)
+        public virtual void AddRemoteInput(int localIdentifier, int remoteIdentifier, ClientInputDefinition clientInput)
         {
             URollbackClient localClient = GetClient(localIdentifier);
-            URollbackClient remoteClient = GetClient(identifier);
-            remoteClient.AdvanceRemoteInputFrame(localClient.InputFrame);
+            URollbackClient remoteClient = GetClient(remoteIdentifier);
+            remoteClient.AddInput(clientInput);
+            remoteClient.AddRemoteFrameLag(localClient.InputFrame);
         }
 
         /// <summary>
@@ -203,6 +212,14 @@ namespace URollback.Core
                 }
             }
             return highestRTTClient;
+        }
+
+        /// <summary>
+        /// Advances the rollback state forward. 
+        /// </summary>
+        public virtual void AdvanceState()
+        {
+
         }
     }
 }

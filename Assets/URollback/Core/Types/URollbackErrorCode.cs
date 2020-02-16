@@ -7,6 +7,7 @@ namespace URollback.Core
     public enum URollbackErrorCode
     {
         OK = 0,
-        INVALID_SESSION = 1
+        INVALID_SESSION = 1,
+        INVALID_CLIENT = 2
     }
 }

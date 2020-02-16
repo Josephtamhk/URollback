@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using URollback.Core;
+using URollback.Core.Input;
 
 namespace URollback.Examples.VectorWar
 {
@@ -12,12 +13,12 @@ namespace URollback.Examples.VectorWar
         private NetworkManager networkManager;
         [SerializeField] private GameObject playerPrefab;
 
-        double rtt;
-        float rttUpdateTimer;
+        public double ClientRTT { get { return rtt; } }
+
+        private float rttUpdateTimer;
+        private double rtt;
 
         [SyncVar] public int connectionID;
-
-        private List<PlayerInputLog> playersInputs = new List<PlayerInputLog>();
 
         private void Start()
         {
@@ -83,19 +84,6 @@ namespace URollback.Examples.VectorWar
             GameObject player = Instantiate(playerPrefab, gameManager.spawnPositions[spawnIndex], Quaternion.identity);
             gameManager.MatchManager.simObjectManager.RegisterObject(player.GetComponent<ISimObject>());
             player.GetComponent<PlayerManager>().Init(this);
-        }
-
-        /// <summary>
-        /// Gets the input of the given player, with an optional
-        /// offset of how far back you want a input for.
-        /// </summary>
-        /// <param name="player">The player you want the input for.</param>
-        /// <param name="framesBack">How many frames before the current one you want. This number
-        /// should not be less than 0.</param>
-        /// <returns></returns>
-        public PlayerInputDefinition GetInput(int player, int framesBack=0)
-        {
-            return playersInputs[player].GetInput(0-framesBack);
         }
     }
 }

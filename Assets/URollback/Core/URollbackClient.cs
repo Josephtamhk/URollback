@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using URollback.Core.Input;
 
 namespace URollback.Core
 {
@@ -12,15 +11,16 @@ namespace URollback.Core
 
         public int Identifier { get { return identifier; } }
         public double RTT { get { return rtt; } set { rtt = value; OnRTTChanged?.Invoke(); } }
-        public int InputFrame { get { return inputFrame; } }
+        public int InputFrame { get { return inputLog.InputFrame(); } }
 
-        [SerializeField] protected int identifier;
-        [SerializeField] protected double rtt;
-        [SerializeField] protected int inputFrame;
-        [SerializeField] protected double localFrameLagAvg;
-        [SerializeField] protected double remoteFrameLagAvg;
-        [SerializeField] protected List<int> localFrameLagDataSet = new List<int>();
-        [SerializeField] protected List<int> remoteFrameLagDataSet = new List<int>();
+        protected ClientInputLog inputLog = new ClientInputLog();
+        protected int identifier;
+        protected double rtt;
+        protected int inputFrame;
+        protected double localFrameLagAvg;
+        protected double remoteFrameLagAvg;
+        protected List<int> localFrameLagDataSet = new List<int>();
+        protected List<int> remoteFrameLagDataSet = new List<int>();
 
         public URollbackClient(int identifier)
         {
@@ -35,32 +35,57 @@ namespace URollback.Core
 
         /// <summary>
         /// Call this whenever the client adds another
-        /// input to their queue. If it's a remote client,
-        /// call AdvanceRemoteInputFrame instead.
+        /// input to their queue.
         /// </summary>
-        public void AdvanceLocalInputFrame()
+        public void AddInput(ClientInputDefinition input)
         {
-            inputFrame++;
+            inputLog.AddInput(input);
         }
 
         /// <summary>
+        /// Remote Frame Lag is how many frames the remote client
+        /// is predicting for this local client.
         /// Call this whenever we get a input that
         /// belongs to a remote client on that client's URollbackClient.
         /// </summary>
-        public void AdvanceRemoteInputFrame(int localClientInputFrame)
+        public void AddRemoteFrameLag(int localClientInputFrame)
         {
-            inputFrame++;
             remoteFrameLagDataSet.Add(inputFrame - localClientInputFrame);
         }
 
         /// <summary>
-        /// Call this right after you call AdvanceInputFrame
-        /// on all clients except the local one.
+        /// Local Frame Lag is how many frames we're predicting
+        /// for this remote client.
         /// </summary>
         /// <param name="localClientInputFrame"></param>
         public void AddLocalFrameLag(int localClientInputFrame)
         {
             localFrameLagDataSet.Add(localClientInputFrame - inputFrame);
+        }
+
+        public void CalculateFrameLag()
+        {
+            if (localFrameLagDataSet.Count != 0)
+            {
+                localFrameLagAvg = 0;
+                for(int i = 0; i < localFrameLagDataSet.Count; i++)
+                {
+                    localFrameLagAvg += localFrameLagDataSet[i];
+                }
+                localFrameLagAvg /= localFrameLagDataSet.Count;
+                localFrameLagDataSet.Clear();
+            }
+
+            if(remoteFrameLagDataSet.Count != 0)
+            {
+                remoteFrameLagAvg = 0;
+                for(int i = 0; i < remoteFrameLagDataSet.Count; i++)
+                {
+                    remoteFrameLagAvg += remoteFrameLagDataSet[i];
+                }
+                remoteFrameLagAvg /= remoteFrameLagDataSet.Count;
+                remoteFrameLagDataSet.Clear();
+            }
         }
     }
 }
