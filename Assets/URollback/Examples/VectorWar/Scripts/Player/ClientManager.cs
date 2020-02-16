@@ -19,6 +19,7 @@ namespace URollback.Examples.VectorWar
         private double rtt;
 
         [SyncVar] public int connectionID;
+        private int players = 1;
 
         private void Start()
         {
@@ -84,6 +85,20 @@ namespace URollback.Examples.VectorWar
             GameObject player = Instantiate(playerPrefab, gameManager.spawnPositions[spawnIndex], Quaternion.identity);
             gameManager.MatchManager.simObjectManager.RegisterObject(player.GetComponent<ISimObject>());
             player.GetComponent<PlayerManager>().Init(this);
+        }
+
+        public ClientInputHolder PollInputs()
+        {
+            List<PlayerInputDefinition> inputs = new List<PlayerInputDefinition>();
+            for (int i = 0; i < players; i++)
+            {
+                float thrustMag = Input.GetAxis("Vertical");
+                float turnMag = Input.GetAxis("Horizontal");
+                bool isFiring = Input.GetKey(KeyCode.Space);
+                inputs.Add(new PlayerInputDefinition(thrustMag, turnMag, isFiring));
+            }
+            ClientInputHolder clientInputHolder = new ClientInputHolder(inputs);
+            return clientInputHolder;
         }
     }
 }

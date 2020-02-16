@@ -166,12 +166,12 @@ namespace URollback.Core
                 return URollbackErrorCode.INVALID_CLIENT;
             }
 
-            OnAdvanceLocalInput?.Invoke(identifier);
             URollbackClient localClient = GetClient(identifier);
             localClient.AddInput(clientInput);
+            OnAdvanceLocalInput?.Invoke(identifier);
 
             // Calculate how many frames we're predicting for remote client(s). 
-            foreach(URollbackClient remoteClient in clients.Values)
+            foreach (URollbackClient remoteClient in clients.Values)
             {
                 if(remoteClient != localClient)
                 {

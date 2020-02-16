@@ -32,6 +32,7 @@ namespace URollback.Examples.VectorWar
         public void StartMatch()
         {
             matchStarted = true;
+            timeStepManager.Activate();
         }
 
         public void Update()
@@ -41,14 +42,17 @@ namespace URollback.Examples.VectorWar
 
         protected virtual void Tick(float dt)
         {
-            /*
-            // Add the player's local input to the simulation.
-            URollbackErrorCode result = gameManager.rollbackSession.AdvanceLocalInput(NetworkClient.connection.connectionId);
+            NetworkIdentity localIdentity = NetworkClient.connection.identity;
+            ClientManager localClientManager = localIdentity.GetComponent<ClientManager>();
+
+            // Add the local player's inputs to the simulation.
+            URollbackErrorCode result = gameManager
+                .rollbackSession.AddLocalInput(localIdentity.connectionToClient.connectionId, localClientManager.PollInputs());
 
             if(result == URollbackErrorCode.OK)
             {
-                simObjectManager.Update(dt);
-            }*/
+
+            }
         }
     }
 }

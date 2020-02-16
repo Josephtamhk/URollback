@@ -10,21 +10,23 @@ public class TimeStepManager
     public delegate void UpdateAction(float dt);
     public event UpdateAction OnUpdate;
 
-    protected float timestep = 60.0f;
+    protected float timestep;
+    protected float timestepClampUpper;
+    protected float timestepClampLower;
     protected float timescale = 1.0f;
 
-    protected float[] timestepClampTimes;
     protected float accumulator;
 
     protected bool active;
     protected bool resync;
 
-    public TimeStepManager(float timestep, float timescale, float timestepUpperClamp, float timestepLowerClamp)
+    public TimeStepManager(float tickRate, float timescale, float tickRateUpperClamp, float tickRateLowerClamp)
     {
-        this.timestep = timestep;
-        this.timescale = timescale;
         accumulator = 0;
-        timestepClampTimes = new float[] { timestepUpperClamp, timestepLowerClamp };
+        this.timestep = 1.0f / tickRate;
+        timestepClampLower = 1.0f/tickRateLowerClamp;
+        timestepClampUpper = 1.0f/tickRateUpperClamp;
+        this.timescale = timescale;
         resync = false;
         active = false;
     }
@@ -65,17 +67,17 @@ public class TimeStepManager
             resync = false;
         }
 
-        if (Mathf.Abs(delta - timestepClampTimes[0]) < .0002)
+        if (Mathf.Abs(delta - timestepClampUpper) < .0002)
         {
-            delta = timestepClampTimes[0];
+            delta = timestepClampUpper;
         }
         if (Mathf.Abs(delta - timestep) < .0002)
         {
             delta = timestep;
         }
-        if (Mathf.Abs(delta - timestepClampTimes[1]) < .0002)
+        if (Mathf.Abs(delta - timestepClampLower) < .0002)
         {
-            delta = timestepClampTimes[1];
+            delta = timestepClampLower;
         }
 
         accumulator += delta * timescale;
