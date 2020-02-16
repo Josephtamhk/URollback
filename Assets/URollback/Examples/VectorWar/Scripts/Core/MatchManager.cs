@@ -45,9 +45,13 @@ namespace URollback.Examples.VectorWar
             NetworkIdentity localIdentity = NetworkClient.connection.identity;
             ClientManager localClientManager = localIdentity.GetComponent<ClientManager>();
 
-            // Add the local player's inputs to the simulation.
+            // Grab the client's inputs. 
+            // This method also sends our inputs to the other clients.
+            ClientInputHolder clientInputs = localClientManager.PollLocalInputs();
+
+            // Add the local client's inputs to the local simulation.
             URollbackErrorCode result = gameManager
-                .rollbackSession.AddLocalInput(localIdentity.connectionToClient.connectionId, localClientManager.PollInputs());
+                .rollbackSession.AddLocalInput(localIdentity.connectionToClient.connectionId, clientInputs);
 
             if(result == URollbackErrorCode.OK)
             {

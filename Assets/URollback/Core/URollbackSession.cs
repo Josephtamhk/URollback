@@ -183,18 +183,22 @@ namespace URollback.Core
 
         /// <summary>
         /// Advances the input frame coutner for a remote client,
-        /// and calculates a remoteFrameLag value for the client.
-        /// Call this right after you get the input from a remote client
-        /// and have added it to their list of inputs.
+        /// and calculates a remoteFrameLag value for that client.
         /// </summary>
         /// <param name="localIdentifier"></param>
         /// <param name="identifier"></param>
-        public virtual void AddRemoteInput(int localIdentifier, int remoteIdentifier, ClientInputDefinition clientInput)
+        public virtual URollbackErrorCode AddRemoteInput(int localIdentifier, int remoteIdentifier, ClientInputDefinition clientInput)
         {
+            if (!clients.ContainsKey(remoteIdentifier)
+                || !clients.ContainsKey(localIdentifier))
+            {
+                return URollbackErrorCode.INVALID_CLIENT;
+            }
             URollbackClient localClient = GetClient(localIdentifier);
             URollbackClient remoteClient = GetClient(remoteIdentifier);
             remoteClient.AddInput(clientInput);
             remoteClient.AddRemoteFrameLag(localClient.InputFrame);
+            return URollbackErrorCode.OK;
         }
 
         /// <summary>

@@ -12,6 +12,7 @@ namespace URollback.Core
         public int Identifier { get { return identifier; } }
         public double RTT { get { return rtt; } set { rtt = value; OnRTTChanged?.Invoke(); } }
         public int InputFrame { get { return inputLog.InputFrame(); } }
+        public int InputDelay { get { return inputDelay; } }
 
         protected ClientInputLog inputLog = new ClientInputLog();
         protected int identifier;
@@ -21,6 +22,7 @@ namespace URollback.Core
         protected double remoteFrameLagAvg;
         protected List<int> localFrameLagDataSet = new List<int>();
         protected List<int> remoteFrameLagDataSet = new List<int>();
+        protected int inputDelay;
 
         public URollbackClient(int identifier)
         {
@@ -86,6 +88,11 @@ namespace URollback.Core
                 remoteFrameLagAvg /= remoteFrameLagDataSet.Count;
                 remoteFrameLagDataSet.Clear();
             }
+        }
+
+        public void SetInputDelay(int value)
+        {
+            inputDelay = value;
         }
     }
 }

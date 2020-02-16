@@ -87,7 +87,7 @@ namespace URollback.Examples.VectorWar
             player.GetComponent<PlayerManager>().Init(this);
         }
 
-        public ClientInputHolder PollInputs()
+        public ClientInputHolder PollLocalInputs()
         {
             List<PlayerInputDefinition> inputs = new List<PlayerInputDefinition>();
             for (int i = 0; i < players; i++)
@@ -99,6 +99,29 @@ namespace URollback.Examples.VectorWar
             }
             ClientInputHolder clientInputHolder = new ClientInputHolder(inputs);
             return clientInputHolder;
+        }
+
+        // Sends the client's inputs to the server.
+        // The server then sends the inputs to other clients.
+        [Command]
+        public void CmdSendInputs(ClientInputHolder inputs)
+        {
+            //gameManager.rollbackSession.add
+            foreach (NetworkConnectionToClient nc in NetworkServer.connections.Values)
+            {
+                // Ignore the client that sent the message.
+                if (nc.connectionId != connectionToClient.connectionId)
+                {
+                    TargetRecieveInputs(nc, inputs);
+                }
+            }
+        }
+
+        [TargetRpc]
+        public void TargetRecieveInputs(NetworkConnection target, ClientInputHolder inputs)
+        {
+            gameManager.rollbackSession
+                .AddRemoteInput(NetworkClient.connection.connectionId, target.connectionId, inputs);
         }
     }
 }

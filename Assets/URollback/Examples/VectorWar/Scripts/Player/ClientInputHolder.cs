@@ -14,6 +14,11 @@ namespace URollback.Examples.VectorWar
         // Index = player number.
         public List<PlayerInputDefinition> playerInputs;
 
+        public ClientInputHolder()
+        {
+
+        }
+
         public ClientInputHolder(List<PlayerInputDefinition> playerInputs)
         {
             this.playerInputs = playerInputs; 
